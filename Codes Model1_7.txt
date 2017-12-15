@@ -8,9 +8,9 @@ Run;
 ODS HTML CLOSE;
 
 
-•	Number of observations = 400
-•	Number of variables = 21 (including ID variables dnum and snum).
-•	All the variables are in numerical type, where yr_rnd is a binary categorical variable and mealcat is an ordinal variable.
+â€¢	Number of observations = 400
+â€¢	Number of variables = 21 (including ID variables dnum and snum).
+â€¢	All the variables are in numerical type, where yr_rnd is a binary categorical variable and mealcat is an ordinal variable.
 
 Next, check for outliers, invalid and missing values:
 
@@ -46,7 +46,7 @@ Note: Since dnum (District Code) and snum (School Number) are irrelevant for thi
 
 Missing Values/Outliers Treatments for the above highlighted variables:
 
-•	Meals has 85 missing values which is a huge number as compared to 400 observations. So, it can’t be imputed. We can check for the category wise frequency distribution in Mealcat:
+â€¢	Meals has 85 missing values which is a huge number as compared to 400 observations. So, it canâ€™t be imputed. We can check for the category wise frequency distribution in Mealcat:
 
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\Meals_Missing_Treatment.xls';
 Proc Means Data = reg.elemapi mean nmiss;
@@ -55,7 +55,7 @@ Class Mealcat;
 Run;
 ODS HTML CLOSE;
 
-This code will compute mean and nmiss of Meals group by each value of Mealcat. As a result, we can impute the missing values corresponding to a particular Mealcat category by the category’s mean:
+This code will compute mean and nmiss of Meals group by each value of Mealcat. As a result, we can impute the missing values corresponding to a particular Mealcat category by the categoryâ€™s mean:
 
 Data reg.data;
 Set reg.elemapi;
@@ -63,14 +63,14 @@ If meals = . and mealcat = 1 then meals = 28.36;
 If meals = . and mealcat = 2 then meals = 66.046875;
 Run;
 
-•	Mobility has no outliers and only 1 missing value, which can be imputed using the mean of the column (obtained in Missing_Outlier_Check.xls):
+â€¢	Mobility has no outliers and only 1 missing value, which can be imputed using the mean of the column (obtained in Missing_Outlier_Check.xls):
 
 Data reg.data;
 Set reg.data;
 If mobility = . then mobility = 18.25313;
 Run;
 
-•	Acs_k3 contains negative values which is invalid in this context. On a careful inspection using Quantiles and ExtremeObs tables, it makes sense to take the absolute values of the negative values to make the data valid. Also, the 2 missing values may be imputed using mean:
+â€¢	Acs_k3 contains negative values which is invalid in this context. On a careful inspection using Quantiles and ExtremeObs tables, it makes sense to take the absolute values of the negative values to make the data valid. Also, the 2 missing values may be imputed using mean:
 
 Data reg.data; 
 Set reg.data;
@@ -78,21 +78,21 @@ acs_k3 = abs(acs_k3);
 If acs_k3 = . then acs_k3 = 18.54774;
 Run;
 
-•	  Acs_46 has 3 missing values which can be imputed using mean:
+â€¢	  Acs_46 has 3 missing values which can be imputed using mean:
 
 Data reg.data;
 Set reg.data;
 If acs_46 = . then acs_46 = 29.68514;
 Run;
 
-•	Full has values in the form of percentages upto 25 Percentile i.e. 0.42, 0.45 and so on, while the others are whole numbers such as 87, 97,…,100. It looks like these anamoly is due to the variation in the expression of percentages by different people. It makes sense to multiply the number which as less than 1, by 100:
+â€¢	Full has values in the form of percentages upto 25 Percentile i.e. 0.42, 0.45 and so on, while the others are whole numbers such as 87, 97,â€¦,100. It looks like these anamoly is due to the variation in the expression of percentages by different people. It makes sense to multiply the number which as less than 1, by 100:
 
 Data reg.data;
 Set reg.data;
 If full <=1 then full = full*100;
 Run;
 
-•	Avg_ed has 19 missing values. We may impute these values using the statistics of the districts as well as the whole column. This makes sense since schools in a particular district can be expected to have somewhat similar ratings. 
+â€¢	Avg_ed has 19 missing values. We may impute these values using the statistics of the districts as well as the whole column. This makes sense since schools in a particular district can be expected to have somewhat similar ratings. 
 
 Proc means data = reg.elemapi;
 var avg_ed;
@@ -133,7 +133,7 @@ c)	To use the mean/median value of all the observed values in the column if a pa
 
 Now the data is ready to be used for modelling and testing.
 
-Let’s split the data into two parts: train data and test data:
+Letâ€™s split the data into two parts: train data and test data:
 
 Data reg.train reg.test;
 Set reg.data;
@@ -148,7 +148,7 @@ Now, all the operations will be done only on the training data.
 
 Now, some preliminary modelling checks.:
 
-•	To check if the continuous dependent variables have significant correlations with Api00:
+â€¢	To check if the continuous dependent variables have significant correlations with Api00:
 
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\Correlation_with_api00.xls';
 ODS Trace On/listing;
@@ -159,8 +159,8 @@ Run;
 ODS Trace Off;
 ODS HTML Close;
 
-In the Excel file ‘Correlation_with_api00.xls’, it can be observed that all of the independent variables have significant correlations (p-value < 0.01).
-•	To check if the categorical variables have significant impact on Api00:
+In the Excel file â€˜Correlation_with_api00.xlsâ€™, it can be observed that all of the independent variables have significant correlations (p-value < 0.01).
+â€¢	To check if the categorical variables have significant impact on Api00:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\Impact of yr_rnd on api00.xls';
 ODS Trace On/Listing;
 Proc Anova Data = reg.train;
@@ -192,7 +192,7 @@ Corrected Total	346	7027627.787
 The above 2 tables with significant F values (low p-values) indicate that yr_rnd and mealcat have significant impacts on Api00 and hence must be taken into account.
 4)	Model Building
 Now, we will build multiple models and run MLRM model diagnostic checks on each of the model at each step.
-1)	Let’s start with all the variables first:
+1)	Letâ€™s start with all the variables first:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 hsg not_hsg some_col 
@@ -201,7 +201,7 @@ Quit;
 ODS HTML CLOSE;
 
 From Model1.xls, it can be seen that many variables have insignificant t-values. Also, all the parent-education related variables have oddly high VIF, which suggests rebundancy of one or more of these variables. This suggests Multicollinearity. Notice that hsg has the highest p-value (0.911).
-2)	Let’s try to remove hsg from model1:
+2)	Letâ€™s try to remove hsg from model1:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_1.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 not_hsg some_col 
@@ -210,7 +210,7 @@ col_grad grad_sch avg_ed full emer enroll mealcat
 Quit;
 ODS HTML CLOSE;
 There still are many insignificant variables and some worrisome VIF values. We notice that with the exclusion of hsg, adjusted R-square has increased slightly, which is a good sign. Also, Avg_ed is the most insignificant variable here.
-3)	Let’s try to remove Avg_ed from model1_1:
+3)	Letâ€™s try to remove Avg_ed from model1_1:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_2.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 not_hsg some_col 
@@ -219,7 +219,7 @@ col_grad grad_sch full emer enroll mealcat
 Quit;
 ODS HTML CLOSE;
 There still are many insignificant variables and some worrisome VIF values. We notice that with the exclusion of Avg_ed, adjusted R-square has increased slightly, which is a good sign. Also, enroll is the most insignificant variable here.
-4)	Let’s try to remove enroll from model1_2:
+4)	Letâ€™s try to remove enroll from model1_2:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_3.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 not_hsg some_col 
@@ -228,7 +228,7 @@ col_grad grad_sch full emer  mealcat
 Quit;
 ODS HTML CLOSE;
 There still are many insignificant variables and some worrisome VIF values. We notice that with the exclusion of enroll, adjusted R-square has increased slightly, which is a good sign. Also, emer is the most insignificant variable here.
-5)	Let’s try to remove emer from model1_3:
+5)	Letâ€™s try to remove emer from model1_3:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_4.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 not_hsg some_col 
@@ -237,7 +237,7 @@ col_grad grad_sch full mealcat
 Quit;
 ODS HTML CLOSE;
 There still are many insignificant variables and some worrisome VIF values. We notice that with the exclusion of emer, adjusted R-square has increased slightly, which is a good sign. Also, some_col is the most insignificant variable here.
-6)	Let’s try to remove some_col from model1_4:
+6)	Letâ€™s try to remove some_col from model1_4:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_5.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 not_hsg
@@ -247,7 +247,7 @@ Quit;
 ODS HTML CLOSE;
 There still are many insignificant variables and some worrisome VIF values. We notice that with the exclusion of some_col, adjusted R-square has increased slightly, which is a good sign. Also, mealcat is the most insignificant variable here.
 
-7)	Let’s try to remove mealcat from model 1_5:
+7)	Letâ€™s try to remove mealcat from model 1_5:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_6.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 not_hsg
@@ -256,7 +256,7 @@ col_grad grad_sch full
 Quit;
 ODS HTML CLOSE;
 There still are many insignificant variables and some worrisome VIF values. We notice that with the exclusion of mealcat, adjusted R-square and R-square have decreased by a margin which is where we need to have a trade-off between the loss in R values and exclusion of insignificant variables. Since the decrease is very low, we may consider removing more variables. Also, not_hsg is the most insignificant variable here.
-8)	Let’s try to remove not_hsg from model1_6:
+8)	Letâ€™s try to remove not_hsg from model1_6:
 ODS HTML FILE = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\model1_7.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46
@@ -266,14 +266,14 @@ Quit;
 ODS HTML CLOSE;
 With only a marginal decrease in R values, we now have a model with all the variables as significant.
 Our regression equation is:
-Est(Api00) = (566.51535) – (2.26654*meals) – (1.13465*ell) – (25.14417*yr_rnd) -  (1.81631*mobility) + (4.69048*acs_k3) + (2.03543*acs_46) + (0.63746*col_grad) + (2.05598*grad_sch) + (1.39318*full)
+Est(Api00) = (566.51535) â€“ (2.26654*meals) â€“ (1.13465*ell) â€“ (25.14417*yr_rnd) -  (1.81631*mobility) + (4.69048*acs_k3) + (2.03543*acs_46) + (0.63746*col_grad) + (2.05598*grad_sch) + (1.39318*full)
 
 5)	MLRM Model Diagnostics
 Now, we have to run some diagnostics checks on our model to see if any of the fundamental assumptions of MLRM getting violated. It is a crucial part of a modeling since any such violation of assumptions may lead to severe errors and/or misleading relationships of independent variables with the dependent one.
-•	Multicollinearity: The VIF column in Model1_7.xls is a measure of the severity of the problem. Since all the VIF values are less than 10, we can say that the model is free from any significant multicollinearity.
+â€¢	Multicollinearity: The VIF column in Model1_7.xls is a measure of the severity of the problem. Since all the VIF values are less than 10, we can say that the model is free from any significant multicollinearity.
  
 
-•	Normality of Residuals: It is an important assumption to be validated by the model since the individual t-tests for significance would not be valid with this assumption to be true. We can test it using Shapiro-Wilk, Anderson-Darling tests of normality.
+â€¢	Normality of Residuals: It is an important assumption to be validated by the model since the individual t-tests for significance would not be valid with this assumption to be true. We can test it using Shapiro-Wilk, Anderson-Darling tests of normality.
 
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 
@@ -309,7 +309,7 @@ Run;
  
 The more the curve is close to the diagonal line, the more is the distribution close to the normal distribution. This indicates the normality of our residuals.
 
-•	Homoscedasticity: It is yet another fundamental assumption of a Linear Regression Model which requires the variance of error terms to be constant over the range of predictor variables. It can be tested using White Test, that we can obtain using SPEC option in Proc Reg:
+â€¢	Homoscedasticity: It is yet another fundamental assumption of a Linear Regression Model which requires the variance of error terms to be constant over the range of predictor variables. It can be tested using White Test, that we can obtain using SPEC option in Proc Reg:
 ODS HTML File = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\Model1_7_Homosc_WhiteTest.xls';
 PROC REG DATA = reg.train;
 MODEL API00 = meals ell yr_rnd mobility acs_k3 acs_46 
@@ -335,7 +335,7 @@ ODS HTML Close;
  
 The graph seems to be fairly random which further indicates that the errors are homoscedastic.
 
-•	Autocorrelation: It is another fundamental assumption of a linear regression model that the error terms should not be correlated. We test for the autocorrelation using Durbin-Watson Test Statistic:
+â€¢	Autocorrelation: It is another fundamental assumption of a linear regression model that the error terms should not be correlated. We test for the autocorrelation using Durbin-Watson Test Statistic:
 ODS HTML File = 'C:\SASCOURSE\SASCOURSE\Linear Regression Case Study Materials\Linear Regression Case Study Materials\Reg\Model1_7_AutocorrTest_DWTest.xls';
 ODS Trace On/Listing;
 PROC REG DATA = reg.train;
@@ -353,7 +353,7 @@ Number of Observations	347
 DW Statistic value must be close to 2, ideally, to be free from any autocorrelation. But in practical problems, some level of autocorrelation is usually present and so, we can have some tolerance towards DW statistic. For the given number of observations, d = 1.422 may be considered to be somewhat satisfactory for the modeling purposes. 
 Therefore, we will choose this model as our model, based on the given sample.
 6)	Model Accuracy
-Now, let’s run the model on the test data and check the accuracy of our model:
+Now, letâ€™s run the model on the test data and check the accuracy of our model:
 Data reg.test;
 Set reg.test;
 est_api00 = 566.51535-2.26654*meals-1.13465*ell-25.14417*yr_rnd-1.81631*mobility+4.69048*acs_k3+2.03543*acs_46+0.63746*col_grad+2.05598*grad_sch+1.39318*full;
